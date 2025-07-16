@@ -22,6 +22,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 CACHE_ENABLED = False
@@ -76,6 +78,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "tracker",
+    "users",
 ]
 
 MIDDLEWARE = [
