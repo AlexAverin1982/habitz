@@ -1,17 +1,16 @@
 from django.contrib.auth import get_user_model
-from django_filters.rest_framework import DjangoFilterBackend
 from dotenv import load_dotenv
-from rest_framework.generics import ListAPIView, get_object_or_404
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.reverse import reverse
 
 from .models import CustomUser
 from rest_framework import generics, mixins, status
-from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 
-from .permissions import IsSuperUser, IsOwnProfile, IsAdmin
-from .serializers import CustomUserSerializer, ChangePasswordSerializer, CustomUserRestrictedSerializer
+from .permissions import IsSuperUser, IsOwnProfile
+from .serializers import CustomUserSerializer, ChangePasswordSerializer, CustomUserRestrictedSerializer, \
+    CustomUserLoginOnlySerializer
+from .service import send_telegram_message
 
 User = get_user_model()
 load_dotenv()
@@ -43,9 +42,17 @@ class UserListAPIView(ListAPIView):
     """
     Список пользователей
     """
-    serializer_class = CustomUserSerializer
+    # serializer_class = CustomUserLoginOnlySerializer
     queryset = CustomUser.objects.all()
-    permission_classes = [IsAuthenticated]
+
+    # permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        dataset_is_full = self.kwargs.get('full', False)
+        if dataset_is_full:
+            return CustomUserSerializer
+        else:
+            return CustomUserLoginOnlySerializer
 
 
 class CustomUserRetrieveAPIView(generics.RetrieveAPIView):
@@ -63,6 +70,27 @@ class CustomUserRetrieveAPIView(generics.RetrieveAPIView):
                 return CustomUserSerializer
             else:
                 return CustomUserRestrictedSerializer
+
+
+class CustomUserTelegramNotifyAPIView(generics.RetrieveAPIView):
+    """
+    Контроллер для эндпоинта напоминаний о сегодняшних привычках
+    """
+    serializer_class = CustomUserSerializer
+    queryset = CustomUser.objects.all()
+    permission_classes = [IsAuthenticated]  # , IsOwnProfile]
+
+    def get(self, request, *args, **kwargs):
+        # print(f"kwargs.get('pk'): {kwargs.get('pk')}")
+        send_telegram_message(kwargs.get('pk'))
+        response = {
+            'status': 'success',
+            'code': status.HTTP_200_OK,
+            'message': "итс о''кэй",
+            'data': []
+        }
+
+        return Response(response)
 
 
 class CustomUserPartialUpdateAPIView(generics.GenericAPIView, mixins.UpdateModelMixin):
@@ -114,7 +142,6 @@ class ChangePasswordView(generics.UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 #############################################################################################################
 #
