@@ -35,14 +35,6 @@ class LocationViewSet(viewsets.ModelViewSet):
     pagination_class = CommonPaginator
 
     def get_permissions(self):
-        # if self.action in ['create']:
-        #     self.permission_classes = [IsAuthenticated, ~IsModerator, ]
-        # elif self.action in ['retrieve', 'update']:
-        #     self.permission_classes = (IsAuthenticated, IsModerator | IsOwner)
-        # elif self.action in ['destroy']:
-        #     self.permission_classes = (IsAuthenticated, IsOwner,)
-        # else:
-        #     self.permission_classes = [IsAuthenticated]
         self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
@@ -60,30 +52,6 @@ class LocationViewSet(viewsets.ModelViewSet):
     Вызов задачи на отправку сообщения должен происходить в контроллере обновления места:
     когда мест обновлен — тем, кто подписан на обновления именно этого места, отправляется письмо на почту.
     """
-    # course_id = kwargs.get('pk')
-    # # print('='*100)
-    # notify_users_of_course_updated.delay(course_id)
-    # print('(' * 100)
-    # subs = result.get()
-    # for s in subs:
-    #     print(s)
-
-    # self.object = self.get_object()
-    # # print(f"kwargs: {kwargs}")
-    # serializer = self.get_serializer(data=request.data)
-    #
-    # if serializer.is_valid():
-    #     super(LocationViewSet, self).update(request, *args, **kwargs)
-    #     response = {
-    #         'status': 'success',
-    #         'code': status.HTTP_200_OK,
-    #         'message': f'The course {str(self.object)} updated successfully',
-    #         'data': []
-    #     }
-    #
-    #     return Response(response)
-    #
-    # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ActionViewSet(viewsets.ModelViewSet):
