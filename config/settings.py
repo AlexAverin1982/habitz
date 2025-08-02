@@ -1,9 +1,12 @@
 import os
-# from datetime import timedelta
 from pathlib import Path
+from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
+
+ADMIN_MAIL = os.getenv('ADMIN_MAIL')
+ADMIN_DEFAULT_PASSWORD = os.getenv('ADMIN_DEFAULT_PASSWORD')
 
 ALLOWED_HOSTS = []
 
@@ -35,7 +38,40 @@ CACHES = {
     }
 }
 
+# URL-адрес брокера сообщений
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis, который по умолчанию работает на порту 6379
+
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+# Часовой пояс для работы Celery
+CELERY_TIMEZONE = "Europe/Moscow"
+
+# Флаг отслеживания выполнения задач
+CELERY_TASK_TRACK_STARTED = True
+
+# Максимальное время на выполнение задачи
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+CELERY_BEAT_SCHEDULE = {
+    'task-name': {
+        'task': 'tracker.tasks.prepare_dayly_notifications',  # Путь к задаче
+        'schedule': timedelta(days=1),  # Расписание выполнения задачи
+    },
+}
+
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8000',  # Замените на адрес вашего фронтенд-сервера
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://read-and-write.example.com",  # Замените на адрес вашего фронтенд-сервера
+    # и добавьте адрес бэкенд-сервера
+]
+
+CORS_ALLOW_ALL_ORIGINS = False
+
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False
 
@@ -65,18 +101,22 @@ EMAIL_HOST_USER = os.getenv('SERVER_MAIL_USER')
 EMAIL_HOST_PASSWORD = os.getenv('SERVER_MAIL_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-ADMIN_MAIL = os.getenv('ADMIN_MAIL')
-ADMIN_DEFAULT_PASSWORD = os.getenv('ADMIN_DEFAULT_PASSWORD')
 
 # Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
+    'django.contrib.sites',
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework_simplejwt",
+    'rest_framework',
+    "drf_yasg",
+    "corsheaders",
+    "django_celery_beat",
     "tracker",
     "users",
 ]
@@ -84,11 +124,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
 ]
 
 # Настройки JWT-токенов
@@ -109,6 +151,10 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+
+TELEGRAM_URL = 'https://api.telegram.org/bot'
 
 TEMPLATES = [
     {
