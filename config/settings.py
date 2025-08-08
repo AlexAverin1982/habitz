@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 load_dotenv()
 
@@ -79,12 +80,14 @@ engine = os.getenv("ENGINE")
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("NAME"),
+        "ENGINE": os.getenv("ENGINE"),
+        "NAME": os.getenv("POSTGRES_DB"),
         "USER": os.getenv("USER"),
         "PASSWORD": os.getenv("PASSWORD"),
         "HOST": os.getenv("HOST"),
         "PORT": os.getenv("PORT"),
+        # "HOST": urlparse(os.getenv("POSTGRES_URL")).hostname,
+        # "PORT": urlparse(os.getenv("POSTGRES_URL")).port,
     }
 }
 
