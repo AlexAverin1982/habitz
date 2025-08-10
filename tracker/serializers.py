@@ -26,6 +26,7 @@ class RewardSerializer(serializers.ModelSerializer):
 
 
 class HabitSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(required=False)
     frequency = serializers.IntegerField(min_value=1, max_value=6, required=False)
     duration = serializers.IntegerField(min_value=1, max_value=120, required=False)
     start_date = serializers.DateField(required=False)
