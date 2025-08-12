@@ -9,7 +9,7 @@ load_dotenv()
 ADMIN_MAIL = os.getenv('ADMIN_MAIL')
 ADMIN_DEFAULT_PASSWORD = os.getenv('ADMIN_DEFAULT_PASSWORD')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'yc1', '158.160.193.154']
 
 AUTH_PASSWORD_VALIDATORS = [
     {
