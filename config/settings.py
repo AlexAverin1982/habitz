@@ -1,15 +1,17 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+
+from django.conf.global_settings import STATICFILES_DIRS
 from dotenv import load_dotenv
-from urllib.parse import urlparse
+# from urllib.parse import urlparse
 
 load_dotenv()
 
 ADMIN_MAIL = os.getenv('ADMIN_MAIL')
 ADMIN_DEFAULT_PASSWORD = os.getenv('ADMIN_DEFAULT_PASSWORD')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -35,7 +37,7 @@ CACHE_ENABLED = False
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'LOCATION': 'redis://redis:6379/1',
     }
 }
 
@@ -43,7 +45,7 @@ CACHES = {
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis, который по умолчанию работает на порту 6379
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "Europe/Moscow"
@@ -145,6 +147,9 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = "config.urls"
 
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'api_key': {
