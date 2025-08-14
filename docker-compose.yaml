@@ -51,3 +51,5 @@ services:
 volumes:
   postgres_data:
   static:
+  redis_data:
+  static_volume:
