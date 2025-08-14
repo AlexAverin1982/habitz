@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+
+from django.conf.global_settings import STATICFILES_DIRS
 from dotenv import load_dotenv
 # from urllib.parse import urlparse
 
@@ -145,6 +147,9 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = "config.urls"
 
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'api_key': {
