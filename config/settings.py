@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
-from django.conf.global_settings import STATICFILES_DIRS
 from dotenv import load_dotenv
 # from urllib.parse import urlparse
 
@@ -34,10 +33,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 CACHE_ENABLED = False
 
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://redis:6379/1',
+        'LOCATION': f'{os.getenv("REDIS_HOST")}://{os.getenv("REDIS_HOST")}:{os.getenv("REDIS_PORT")}/1',
     }
 }
 
@@ -78,16 +78,16 @@ CORS_ALLOW_ALL_ORIGINS = False
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False
 
-engine = os.getenv("ENGINE")
+# engine = os.getenv("ENGINE")
 
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("ENGINE"),
-        "NAME": os.getenv("NAME"),
-        "USER": os.getenv("USER"),
-        "PASSWORD": os.getenv("PASSWORD"),
-        "HOST": os.getenv("HOST"),
-        "PORT": os.getenv("PORT"),
+        "ENGINE": os.getenv("DB_ENGINE"),
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_PORT"),
         # "HOST": urlparse(os.getenv("POSTGRES_URL")).hostname,
         # "PORT": urlparse(os.getenv("POSTGRES_URL")).port,
     }
