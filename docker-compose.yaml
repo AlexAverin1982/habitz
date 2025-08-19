@@ -51,7 +51,7 @@ services:
 
   celery:
     build: .
-    command: celery worker --app=config --loglevel=info
+    command: celery worker --app config --loglevel=info
     volumes:
       - .:/usr/src/app
     environment:
