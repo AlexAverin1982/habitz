@@ -42,10 +42,11 @@ CACHES = {
 }
 
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis, который по умолчанию работает на порту 6379
+CELERY_BROKER_URL = f'{os.getenv("CELERY_HOST")}://{os.getenv("CELERY_HOST")}:{os.getenv("CELERY_PORT")}/0'
+# Redis, который по умолчанию работает на порту 6379
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = f'{os.getenv("CELERY_HOST")}://{os.getenv("CELERY_HOST")}:{os.getenv("CELERY_PORT")}/0'
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "Europe/Moscow"
@@ -78,7 +79,6 @@ CORS_ALLOW_ALL_ORIGINS = False
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False
 
-# engine = os.getenv("ENGINE")
 
 DATABASES = {
     "default": {
@@ -88,13 +88,11 @@ DATABASES = {
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
         "HOST": os.getenv("POSTGRES_HOST"),
         "PORT": os.getenv("POSTGRES_PORT"),
-        # "HOST": urlparse(os.getenv("POSTGRES_URL")).hostname,
-        # "PORT": urlparse(os.getenv("POSTGRES_URL")).port,
     }
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
