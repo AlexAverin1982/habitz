@@ -42,11 +42,8 @@ CACHES = {
 }
 
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = f'{os.getenv("CELERY_HOST")}://{os.getenv("CELERY_HOST")}:{os.getenv("CELERY_PORT")}/0'
-# Redis, который по умолчанию работает на порту 6379
-
-# URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = f'{os.getenv("CELERY_HOST")}://{os.getenv("CELERY_HOST")}:{os.getenv("CELERY_PORT")}/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "Europe/Moscow"
