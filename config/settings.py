@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from celery.schedules import crontab
+
 
 from dotenv import load_dotenv
 # from urllib.parse import urlparse
@@ -57,7 +59,8 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BEAT_SCHEDULE = {
     'task-name': {
         'task': 'tracker.tasks.prepare_dayly_notifications',  # Путь к задаче
-        'schedule': timedelta(days=1),  # Расписание выполнения задачи
+        'schedule': crontab(hour='8-21', minute='*/5')
+            # timedelta(days=1),  # Расписание выполнения задачи
     },
 }
 
@@ -79,7 +82,8 @@ CSRF_COOKIE_SECURE = False
 
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("DB_ENGINE"),
+        # "ENGINE": os.getenv("DB_ENGINE"),
+        "ENGINE": 'django.db.backends.postgresql_psycopg2',
         "NAME": os.getenv("POSTGRES_DB"),
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
