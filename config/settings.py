@@ -1,15 +1,18 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from celery.schedules import crontab
+
+
 from dotenv import load_dotenv
-from urllib.parse import urlparse
+# from urllib.parse import urlparse
 
 load_dotenv()
 
 ADMIN_MAIL = os.getenv('ADMIN_MAIL')
 ADMIN_DEFAULT_PASSWORD = os.getenv('ADMIN_DEFAULT_PASSWORD')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -32,18 +35,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 CACHE_ENABLED = False
 
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'LOCATION': f'{os.getenv("REDIS_HOST")}://{os.getenv("REDIS_HOST")}:{os.getenv("REDIS_PORT")}/1',
     }
 }
 
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis, который по умолчанию работает на порту 6379
-
-# URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "Europe/Moscow"
@@ -57,7 +59,8 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BEAT_SCHEDULE = {
     'task-name': {
         'task': 'tracker.tasks.prepare_dayly_notifications',  # Путь к задаче
-        'schedule': timedelta(days=1),  # Расписание выполнения задачи
+        'schedule': crontab(hour='8-21', minute='*/5')
+            # timedelta(days=1),  # Расписание выполнения задачи
     },
 }
 
@@ -76,23 +79,21 @@ CORS_ALLOW_ALL_ORIGINS = False
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False
 
-engine = os.getenv("ENGINE")
 
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("ENGINE"),
-        "NAME": os.getenv("NAME"),
-        "USER": os.getenv("USER"),
-        "PASSWORD": os.getenv("PASSWORD"),
-        "HOST": os.getenv("HOST"),
-        "PORT": os.getenv("PORT"),
-        # "HOST": urlparse(os.getenv("POSTGRES_URL")).hostname,
-        # "PORT": urlparse(os.getenv("POSTGRES_URL")).port,
+        # "ENGINE": os.getenv("DB_ENGINE"),
+        "ENGINE": 'django.db.backends.postgresql_psycopg2',
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_PORT"),
     }
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -145,6 +146,9 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = "config.urls"
 
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'api_key': {
