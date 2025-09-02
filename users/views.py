@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from .permissions import IsSuperUser, IsOwnProfile
 from .serializers import CustomUserSerializer, ChangePasswordSerializer, CustomUserRestrictedSerializer, \
     CustomUserLoginOnlySerializer
-from .service import send_telegram_message
+from .service import local_time_to_utc
 
 User = get_user_model()
 load_dotenv()
@@ -24,7 +24,14 @@ class UserCreateAPIView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
 
     def perform_create(self, serializer):
-        user = serializer.save(is_active=True)
+        """
+        Пользователь указывает время как локальное, но сервер работает с временем по utc
+        """
+        n_time = self.request.data.get('dayly_notification_time')
+        if n_time:
+            user = serializer.save(is_active=True, dayly_notification_time=local_time_to_utc(n_time))
+        else:
+            user = serializer.save(is_active=True)
         user.set_password(user.password)
         user.save()
 
@@ -72,25 +79,25 @@ class CustomUserRetrieveAPIView(generics.RetrieveAPIView):
                 return CustomUserRestrictedSerializer
 
 
-class CustomUserTelegramNotifyAPIView(generics.RetrieveAPIView):
-    """
-    Контроллер для эндпоинта напоминаний о сегодняшних привычках
-    """
-    serializer_class = CustomUserSerializer
-    queryset = CustomUser.objects.all()
-    permission_classes = [IsAuthenticated]  # , IsOwnProfile]
-
-    def get(self, request, *args, **kwargs):
-        # print(f"kwargs.get('pk'): {kwargs.get('pk')}")
-        send_telegram_message(kwargs.get('pk'))
-        response = {
-            'status': 'success',
-            'code': status.HTTP_200_OK,
-            'message': "итс о''кэй",
-            'data': []
-        }
-
-        return Response(response)
+# class CustomUserTelegramNotifyAPIView(generics.RetrieveAPIView):
+#     """
+#     Контроллер для эндпоинта напоминаний о сегодняшних привычках
+#     """
+#     serializer_class = CustomUserSerializer
+#     queryset = CustomUser.objects.all()
+#     permission_classes = [IsAuthenticated]  # , IsOwnProfile]
+#
+#     def get(self, request, *args, **kwargs):
+#         # print(f"kwargs.get('pk'): {kwargs.get('pk')}")
+#         send_telegram_message(kwargs.get('pk'))
+#         response = {
+#             'status': 'success',
+#             'code': status.HTTP_200_OK,
+#             'message': "итс о''кэй",
+#             'data': []
+#         }
+#
+#         return Response(response)
 
 
 class CustomUserPartialUpdateAPIView(generics.GenericAPIView, mixins.UpdateModelMixin):
@@ -102,6 +109,12 @@ class CustomUserPartialUpdateAPIView(generics.GenericAPIView, mixins.UpdateModel
     permission_classes = [IsAuthenticated, IsOwnProfile]
 
     def put(self, request, *args, **kwargs):
+        n_time = self.request.data.get('dayly_notification_time')
+        if n_time:
+            n_time = local_time_to_utc(n_time)
+            self.request.data['dayly_notification_time'] = n_time
+            kwargs['dayly_notification_time'] = n_time
+
         return self.partial_update(request, *args, **kwargs)
 
 

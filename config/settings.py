@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from datetime import timedelta
 from celery.schedules import crontab
 
 
@@ -59,7 +58,7 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BEAT_SCHEDULE = {
     'task-name': {
         'task': 'tracker.tasks.prepare_dayly_notifications',  # Путь к задаче
-        'schedule': crontab(hour='8-21', minute='*/5')
+        'schedule': crontab(hour='8-21', minute='*/10')
             # timedelta(days=1),  # Расписание выполнения задачи
     },
 }
@@ -93,7 +92,7 @@ DATABASES = {
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
