@@ -5,3 +5,8 @@ htmlcov/
 .flake8
 nginx.conf
 README.md
+.git
+.env
+.gitignore
+docker-compose.yaml
+Dockerfile

@@ -2,8 +2,8 @@ import os
 from pathlib import Path
 from celery.schedules import crontab
 
-
 from dotenv import load_dotenv
+
 # from urllib.parse import urlparse
 
 load_dotenv()
@@ -34,17 +34,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 CACHE_ENABLED = False
 
-
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': f'{os.getenv("REDIS_HOST")}://{os.getenv("REDIS_HOST")}:{os.getenv("REDIS_PORT")}/1',
+        'LOCATION': f'redis://{os.getenv("REDIS_HOST")}:{os.getenv("REDIS_PORT")}/1',
     }
 }
 
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_BROKER_URL = f'redis://{os.getenv("REDIS_HOST")}:{os.getenv("REDIS_PORT")}/0'
+CELERY_RESULT_BACKEND = f'redis://{os.getenv("REDIS_HOST")}:{os.getenv("REDIS_PORT")}/0'
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "Europe/Moscow"
@@ -59,7 +58,7 @@ CELERY_BEAT_SCHEDULE = {
     'task-name': {
         'task': 'tracker.tasks.prepare_dayly_notifications',  # Путь к задаче
         'schedule': crontab(hour='8-21', minute='*/10')
-            # timedelta(days=1),  # Расписание выполнения задачи
+        # timedelta(days=1),  # Расписание выполнения задачи
     },
 }
 
@@ -78,7 +77,6 @@ CORS_ALLOW_ALL_ORIGINS = False
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False
 
-
 DATABASES = {
     "default": {
         # "ENGINE": os.getenv("DB_ENGINE"),
@@ -92,7 +90,7 @@ DATABASES = {
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG_MODE").lower() == 'true'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
