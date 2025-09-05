@@ -6,7 +6,7 @@ from tracker.paginators import CommonPaginator
 from tracker.serializers import LocationSerializer, ActionSerializer, HabitSerializer, \
     HabitStrSerializer, HabitFullSerializer
 from users.permissions import IsModerator, IsOwner
-
+from users.service import local_time_to_utc
 
 class LocationViewSet(viewsets.ModelViewSet):
     """
@@ -104,7 +104,11 @@ class CreateHabit(generics.CreateAPIView):
         return Habit.objects.filter(owner=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        n_time = self.request.data.get('notification_time')
+        if n_time:
+            serializer.save(owner=self.request.user, notification_time=local_time_to_utc(n_time))
+        else:
+            serializer.save(owner=self.request.user)
 
 
 class HabitListAPIView(generics.ListAPIView):
@@ -153,12 +157,16 @@ class HabitPartialUpdateAPIView(generics.GenericAPIView, mixins.UpdateModelMixin
     permission_classes = [IsAuthenticated, IsOwner | IsModerator]
 
     def get_queryset(self):
-        # return Habit.objects.filter(owner=self.request.user)
-        # for item in dir(self):
-        #     print(item)
         return Habit.objects.filter(owner=self.request.user)
 
     def put(self, request, *args, **kwargs):
+        n_time = self.request.data.get('notification_time')
+        if n_time:
+            n_time = local_time_to_utc(n_time)
+            self.request.data['notification_time'] = n_time
+            kwargs['notification_time'] = n_time
+        kwargs['notification_is_scheduled'] = False
+
         return self.partial_update(request, *args, **kwargs)
 
 

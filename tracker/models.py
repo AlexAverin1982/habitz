@@ -109,6 +109,8 @@ class Habit(models.Model):
     # TODO валидатор продолжительности
     duration = models.IntegerField(verbose_name='Время на выполнение в секундах', default=120)
 
+    notification_is_scheduled = models.BooleanField(verbose_name='Оповещение уже запланировано' , default=False)
+
     def __str__(self):
         result = f"Я буду {self.action.name} в {self.time}"
         if self.location.preposition:

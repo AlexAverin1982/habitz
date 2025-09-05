@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshSlid
 
 from users.apps import UsersConfig
 from users.views import UserCreateAPIView, UserListAPIView, CustomUserPartialUpdateAPIView, ChangePasswordView, \
-    UserDeleteAPIView, CustomUserRetrieveAPIView, CustomUserTelegramNotifyAPIView
+    UserDeleteAPIView, CustomUserRetrieveAPIView
 
 app_name = UsersConfig.name
 
@@ -19,5 +19,5 @@ urlpatterns = [
     path('set_password/<int:pk>/', ChangePasswordView.as_view(), name='set_password'),
     path("delete/<int:pk>/", UserDeleteAPIView.as_view(), name="delete_user"),
     path('token_refresh/', TokenRefreshSlidingView.as_view(), name='token_refresh'),
-    path('tg_notify/<int:pk>/', CustomUserTelegramNotifyAPIView.as_view(), name='tg_notify'),
+    # path('tg_notify/<int:pk>/', CustomUserTelegramNotifyAPIView.as_view(), name='tg_notify'),
 ]
