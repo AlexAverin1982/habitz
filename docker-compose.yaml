@@ -99,6 +99,7 @@ services:
     - redis
   beat:
     build: .
+    env_file: .env
     entrypoint: celery
     networks:
       - my_network

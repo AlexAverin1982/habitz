@@ -57,7 +57,7 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BEAT_SCHEDULE = {
     'task-name': {
         'task': 'tracker.tasks.prepare_dayly_notifications',  # Путь к задаче
-        'schedule': crontab(hour='8-21', minute='*/10')
+        'schedule': crontab(hour='8-21', minute='*/5')
         # timedelta(days=1),  # Расписание выполнения задачи
     },
 }
